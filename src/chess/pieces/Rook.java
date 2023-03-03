@@ -19,54 +19,46 @@ public class Rook extends ChessPiece {
     public boolean[][] possibleMoves() {
         boolean[][] matrix = new boolean[getBoard().getRows()][getBoard().getColumns()];
 
-        Position piece = new Position(0, 0);
+        Position position = new Position(0, 0);
 
-        //above
-        piece.setValue(position.getRow() - 1, position.getColumn());
-
-        while (getBoard().positionExists(piece) && !getBoard().thereIsAPiece(piece)) {
-            matrix[piece.getRow()][piece.getColumn()] = true;
-            piece.setRow(piece.getRow() - 1);
+        // above
+        position.setValues(this.position.getRow() - 1, this.position.getColumn());
+        while (getBoard().positionExists(position) && !getBoard().thereIsAPiece(position)) {
+            matrix[position.getRow()][position.getColumn()] = true;
+            position.setRow(position.getRow() - 1);
+        }
+        if (getBoard().positionExists(position) && isThereOpponentPiece(position)) {
+            matrix[position.getRow()][position.getColumn()] = true;
         }
 
-        if (getBoard().positionExists(position) && isThereOpponentPiece(piece)) {
-            matrix[piece.getRow()][piece.getColumn()] = true;
+        // left
+        position.setValues(this.position.getRow(), this.position.getColumn() - 1);
+        while (getBoard().positionExists(position) && !getBoard().thereIsAPiece(position)) {
+            matrix[position.getRow()][position.getColumn()] = true;
+            position.setColumn(position.getColumn() - 1);
+        }
+        if (getBoard().positionExists(position) && isThereOpponentPiece(position)) {
+            matrix[position.getRow()][position.getColumn()] = true;
         }
 
-        //left
-        piece.setValue(position.getRow(), position.getColumn() - 1);
-
-        while (getBoard().positionExists(piece) && !getBoard().thereIsAPiece(piece)) {
-            matrix[piece.getRow()][piece.getColumn()] = true;
-            piece.setColumn(piece.getColumn() - 1);
+        // right
+        position.setValues(this.position.getRow(), this.position.getColumn() + 1);
+        while (getBoard().positionExists(position) && !getBoard().thereIsAPiece(position)) {
+            matrix[position.getRow()][position.getColumn()] = true;
+            position.setColumn(position.getColumn() + 1);
+        }
+        if (getBoard().positionExists(position) && isThereOpponentPiece(position)) {
+            matrix[position.getRow()][position.getColumn()] = true;
         }
 
-        if (getBoard().positionExists(position) && isThereOpponentPiece(piece)) {
-            matrix[piece.getRow()][piece.getColumn()] = true;
+        // below
+        position.setValues(this.position.getRow() + 1, this.position.getColumn());
+        while (getBoard().positionExists(position) && !getBoard().thereIsAPiece(position)) {
+            matrix[position.getRow()][position.getColumn()] = true;
+            position.setRow(position.getRow() + 1);
         }
-
-        //left
-        piece.setValue(position.getRow(), position.getColumn() + 1);
-
-        while (getBoard().positionExists(piece) && !getBoard().thereIsAPiece(piece)) {
-            matrix[piece.getRow()][piece.getColumn()] = true;
-            piece.setColumn(piece.getColumn() + 1);
-        }
-
-        if (getBoard().positionExists(position) && isThereOpponentPiece(piece)) {
-            matrix[piece.getRow()][piece.getColumn()] = true;
-        }
-
-        //bellow
-        piece.setValue(position.getRow() + 1, position.getColumn());
-
-        while (getBoard().positionExists(piece) && !getBoard().thereIsAPiece(piece)) {
-            matrix[piece.getRow()][piece.getColumn()] = true;
-            piece.setRow(piece.getRow() + 1);
-        }
-
-        if (getBoard().positionExists(position) && isThereOpponentPiece(piece)) {
-            matrix[piece.getRow()][piece.getColumn()] = true;
+        if (getBoard().positionExists(position) && isThereOpponentPiece(position)) {
+            matrix[position.getRow()][position.getColumn()] = true;
         }
 
         return matrix;
