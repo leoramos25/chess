@@ -16,6 +16,7 @@ public class ChessMatch {
     private Color currentPlayer;
     private Board board;
     private boolean check;
+    private boolean checkMate;
     private List<Piece> piecesOnTheBoard = new ArrayList<>();
     private List<Piece> capturedPieces = new ArrayList<>();
 
@@ -32,6 +33,10 @@ public class ChessMatch {
 
     public boolean getCheck() {
         return this.check;
+    }
+
+    public boolean getCheckMate() {
+        return this.checkMate;
     }
 
     public Color getCurrentPlayer() {
@@ -69,7 +74,13 @@ public class ChessMatch {
         }
 
         check = testCheck(opponent(currentPlayer));
-        nextTurn();
+
+        if (testCheckMate(opponent(currentPlayer))) {
+            checkMate = true;
+        } else {
+            nextTurn();
+        }
+
         return (ChessPiece) capturedPiece;
     }
 
@@ -130,6 +141,34 @@ public class ChessMatch {
         }
 
         return false;
+    }
+
+    private boolean testCheckMate(Color color) {
+        if (!testCheck(color)) {
+            return false;
+        }
+        List<Piece> piecesList = piecesOnTheBoard.stream()
+                .filter(piece -> ((ChessPiece) piece).getColor() == color)
+                .toList();
+
+        for (Piece piece : piecesList) {
+            boolean[][] matrix = piece.possibleMoves();
+            for (int i = 0; i < matrix.length; i++) {
+                for (int j = 0; j < matrix.length; j++) {
+                    if (matrix[i][j]) {
+                        Position source = ((ChessPiece) piece).getChessPosition().toPosition();
+                        Position target = new Position(i, j);
+                        Piece capturedPiece = makeMovie(source, target);
+                        boolean testCheck = testCheck(color);
+                        undoMove(source, target, capturedPiece);
+                        if (!testCheck) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     private void undoMove(Position source, Position target, Piece capturedPiece) {
