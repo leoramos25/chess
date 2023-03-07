@@ -2,12 +2,26 @@ package chess.pieces;
 
 import boardgame.Board;
 import boardgame.Position;
+import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.enums.Color;
 
 public class King extends ChessPiece {
-    public King(Board board, Color color) {
+    private ChessMatch chessMatch;
+
+    public King(Board board, Color color, ChessMatch chessMatch) {
         super(board, color);
+        this.chessMatch = chessMatch;
+    }
+
+    private boolean canMove(Position position) {
+        ChessPiece piece = (ChessPiece) getBoard().piece(position);
+        return piece == null || piece.getColor() != getColor();
+    }
+
+    private boolean testRookCastling(Position position) {
+        ChessPiece piece = (ChessPiece) getBoard().piece(position);
+        return piece instanceof Rook && piece.getColor() == getColor() && piece.getMoveCount() == 0;
     }
 
     @Override
@@ -69,11 +83,34 @@ public class King extends ChessPiece {
             matrix[piecePosition.getRow()][piecePosition.getColumn()] = true;
         }
 
-        return matrix;
-    }
+        // special move castling
+        if (getMoveCount() == 0 && !chessMatch.getCheck()) {
+            // kingside rook
+            Position rightRookPosition = new Position(position.getRow(), position.getColumn() + 3);
+            if (testRookCastling(rightRookPosition)) {
+                Position rightKingPositionPlusOne = new Position(position.getRow(), position.getColumn() + 1);
+                Position rightKingPositionPlusTwo = new Position(position.getRow(), position.getColumn() + 2);
+                if (getBoard().piece(rightKingPositionPlusOne) == null
+                        && getBoard().piece(rightKingPositionPlusTwo) == null) {
+                    matrix[position.getRow()][position.getColumn() + 2] = true;
+                }
 
-    private boolean canMove(Position position) {
-        ChessPiece piece = (ChessPiece) getBoard().piece(position);
-        return piece == null || piece.getColor() != getColor();
+            }
+
+            // queenside rook
+            Position leftRookPosition = new Position(position.getRow(), position.getColumn() - 4);
+            if (testRookCastling(leftRookPosition)) {
+                Position rightKingPositionMinusOne = new Position(position.getRow(), position.getColumn() - 1);
+                Position rightKingPositionMinusTwo = new Position(position.getRow(), position.getColumn() - 2);
+                Position rightKingPositionMinusTree = new Position(position.getRow(), position.getColumn() - 3);
+                if (getBoard().piece(rightKingPositionMinusOne) == null
+                        && getBoard().piece(rightKingPositionMinusTwo) == null
+                        && getBoard().piece(rightKingPositionMinusTree) == null) {
+                    matrix[position.getRow()][position.getColumn() - 2] = true;
+                }
+            }
+        }
+
+        return matrix;
     }
 }
