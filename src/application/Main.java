@@ -40,7 +40,11 @@ public class Main {
 
                 if (match.getPromoted() != null) {
                     System.out.println("Enter piece for promotion (B/N/R/Q)");
-                    String typeOfPiece = scanner.nextLine();
+                    String typeOfPiece = scanner.nextLine().toUpperCase();
+                    while (!typeOfPiece.equals("B") && !typeOfPiece.equals("N") && !typeOfPiece.equals("R") && !typeOfPiece.equals("Q")) {
+                        System.out.println("Invalid value! Enter piece for promotion (B/N/R/Q): ");
+                        typeOfPiece = scanner.nextLine();
+                    }
                     match.replacePromotedPiece(typeOfPiece);
                 }
             } catch (ChessException | InputMismatchException exception) {
